@@ -32,20 +32,71 @@ npm run test
 ```
 
 ### Deploy to Sepolia
-1. Copy `contracts/.env.example` to `contracts/.env` and set `PRIVATE_KEY` + `SEPOLIA_RPC_URL`.
-2. Deploy:
+1. From repository root, enter `contracts/` once:
 ```bash
 cd contracts
+```
+2. Copy `.env.example` to `.env` and set `PRIVATE_KEY` + `SEPOLIA_RPC_URL`:
+```powershell
+Copy-Item .env.example .env
+```
+3. Deploy:
+```bash
 npm run deploy:sepolia
 ```
+
+If required values are missing, `npm run deploy:sepolia` now prints an explicit setup error before Hardhat runs.
 
 ## 2) Security auditing (Aderyn)
 Report file: `contracts/aderyn_report.md`
 
-Run Aderyn (if installed):
+Windows note: Aderyn CLI is not supported as a native Windows binary. Run it inside WSL.
+
+Install WSL distro (one-time, in an elevated PowerShell):
+```powershell
+wsl --install -d Ubuntu-24.04
+```
+
+If WSL already exists, list available distros:
+```powershell
+wsl --list --online
+```
+
+Open Linux shell and install Aderyn:
 ```bash
-cd ~/block-chain/exam_brock/contracts
-aderyn . -o aderyn_report.md
+wsl -d Ubuntu-24.04
+npm install -g @cyfrin/aderyn
+aderyn --version
+```
+
+Important shell note:
+- `hash -r` and `/mnt/c/...` paths are Linux shell commands; run them only after entering WSL.
+- In Windows PowerShell, do not run `aderyn` directly. Use the wrapper script below.
+
+Run Aderyn from repository root (where `aderyn.toml` exists). From Linux shell:
+```bash
+cd /mnt/c/Users/Administrator/Downloads/eth-vault-uups-dashboard
+aderyn . -o contracts/aderyn_report.md
+```
+
+If you are currently inside `contracts/contracts` in PowerShell, return to repo root first:
+```bash
+cd ..\..
+```
+
+PowerShell shortcut (no manual WSL shell needed):
+```powershell
+cd contracts
+npm run aderyn:wsl -- --install
+```
+Use an elevated PowerShell for first-time WSL setup if Windows returns `E_ACCESSDENIED`.
+
+If your distro is named `Ubuntu` instead of `Ubuntu-24.04`, the script auto-detects it.
+
+After first install, scan only:
+```powershell
+cd contracts
+npm run aderyn:wsl
 ```
 
 Fixed findings documented in the report:
